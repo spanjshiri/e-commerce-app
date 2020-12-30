@@ -2,7 +2,7 @@ import React, { ChangeEventHandler } from 'react'
 
 import './formInput.styles.scss';
 
-const FormInput = (props: {handleChange: ChangeEventHandler, label: string, name: string, type: string, value: any, required: any }) => {
+const FormInput = (props: {handleChange: ChangeEventHandler, label: string, name: string, type: string, value: any, required?: any }) => {
 
     const {handleChange, label, ...otherProps } = props;
     
