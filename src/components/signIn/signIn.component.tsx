@@ -4,7 +4,7 @@ import FormInput from '../formInput/formInput.component';
 
 import './signIn.styles.scss';
 
-import { signInWithGoogle } from '../../firebase/firebase.utils';
+import { auth, signInWithGoogle } from '../../firebase/firebase.utils';
 
 interface props {
 
@@ -25,10 +25,21 @@ class SignIn extends React.Component<props, state> {
         }
     }
 
-    handleSubmit = (event: any) => {
+    handleSubmit = async (event: any) => {
         event.preventDefault();
 
-        this.setState({ email: '', password: '' })
+        const { email, password } = this.state;
+
+        try {
+            await auth.signInWithEmailAndPassword(email, password);
+
+            this.setState({ email: '', password: '' })
+        }
+        catch(error) {
+            console.log(error);
+        }
+
+        
     }
 
     handleEmailChange = (event: any) => {

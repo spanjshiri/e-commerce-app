@@ -40,8 +40,7 @@ class App extends React.Component<props, state> {
               ...snapShot.data()
             }
           })
-
-          console.log(this.state);
+          
         })
       }
       else{
