@@ -1,7 +1,7 @@
 import './App.css';
 import './pages/homepage/homepage.component';
 import HomePage from './pages/homepage/homepage.component';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 import NotFound from './pages/notFound/notFound.component';
 import ShopPage from './pages/shop/shop.component';
 import Header from './components/header/header.component';
@@ -13,6 +13,7 @@ import { setCurrentUser } from './redux/user/user.actions';
 
 interface props {
   setCurrentUser: Function;
+  currentUser: any;
 }
 
 interface state {
@@ -49,14 +50,20 @@ class App extends React.Component<props, state> {
     this.unsubscribeFromAuth();
   }
 
+  
+
   render() {
+    const { currentUser } = this.props;
+
     return (
       <div>
         <Header />
         <Switch>
           <Route exact path='/' component={HomePage} />
           <Route exact path='/shop' component={ShopPage} />
-          <Route exact path='/signin' component={SignInAndSignUp} />
+          <Route exact path='/signin' render={() => {
+            return currentUser ? (<Redirect to='/' />) : (<SignInAndSignUp />)
+          }} />
           <Route component={NotFound} />
         </Switch>
       </div>
@@ -65,8 +72,12 @@ class App extends React.Component<props, state> {
 
 }
 
+const mapStateToProps = ({user} : any) => ({
+  currentUser: user.currentUser
+})
+
 const mapDispatchToProps = (dispatch: any) => ({
   setCurrentUser: (user: any) => dispatch(setCurrentUser(user))
 })
 
-export default connect(null, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);
