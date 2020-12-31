@@ -6,11 +6,13 @@ import NotFound from './pages/notFound/notFound.component';
 import ShopPage from './pages/shop/shop.component';
 import Header from './components/header/header.component';
 import SignInAndSignUp from './pages/signInAndSignUp/signInAndSignUp.component'
-import { auth, createUserProfileDocument } from './firebase/firebase.utils'; 
+import { auth, createUserProfileDocument } from './firebase/firebase.utils';
 import React from 'react';
+import { connect } from 'react-redux';
+import { setCurrentUser } from './redux/user/user.actions';
 
 interface props {
-
+  setCurrentUser: Function;
 }
 
 interface state {
@@ -18,33 +20,27 @@ interface state {
 }
 class App extends React.Component<props, state> {
 
-  constructor(props: any) {
-    super(props);
-
-    this.state = {
-      currentUser: null
-    }
-  }
-
-  unsubscribeFromAuth: { (): void; (): void; } = () => {};
+  unsubscribeFromAuth: { (): void; (): void; } = () => { };
 
   componentDidMount() {
+    const { setCurrentUser } = this.props;
+
     this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
-      if(userAuth) {
+      if (userAuth) {
         const userRef = await createUserProfileDocument(userAuth);
 
         userRef?.onSnapshot(snapShot => {
-          this.setState({
+          setCurrentUser({
             currentUser: {
               id: snapShot.id,
               ...snapShot.data()
             }
           })
-          
+
         })
       }
-      else{
-        this.setState({currentUser: userAuth});
+      else {
+        setCurrentUser(userAuth);
       }
     })
   }
@@ -53,20 +49,24 @@ class App extends React.Component<props, state> {
     this.unsubscribeFromAuth();
   }
 
-  render () {
+  render() {
     return (
       <div>
-        <Header currentUser={this.state.currentUser} />
+        <Header />
         <Switch>
           <Route exact path='/' component={HomePage} />
           <Route exact path='/shop' component={ShopPage} />
-          <Route exact path ='/signin' component={SignInAndSignUp} />
+          <Route exact path='/signin' component={SignInAndSignUp} />
           <Route component={NotFound} />
         </Switch>
       </div>
     );
   }
-  
+
 }
 
-export default App;
+const mapDispatchToProps = (dispatch: any) => ({
+  setCurrentUser: (user: any) => dispatch(setCurrentUser(user))
+})
+
+export default connect(null, mapDispatchToProps)(App);
