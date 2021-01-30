@@ -17,4 +17,4 @@ const rootReducer = combineReducers({
     cart: cartReducer
 })
 
-export default persistReducer(persistConfig, rootReducer)
+export default persistReducer<any, any>(persistConfig, rootReducer)
